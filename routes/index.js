@@ -1,6 +1,8 @@
 var express = require('express');
 var redis = require("redis");
 var bluebird = require("bluebird");
+var http = require('http');
+
 var router = express.Router();
 
 
@@ -92,6 +94,7 @@ function startHeartBeat(key, interval) {
             //key does not exist, that means that client failed
             //to ping server in time
             if(res == null) {
+                console.log("expired key:", key);
                 clearInterval(intervalID);
             }
         });

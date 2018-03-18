@@ -17,6 +17,7 @@ router.post('/heartbeat', function(req, res, next) {
     let serviceName = req.body.name;
     let host = req.body.host;
     let port = req.body.port;
+    console.log(port, host);
 
     if(!serviceName || !host || !port) {
         res.send({
@@ -25,25 +26,61 @@ router.post('/heartbeat', function(req, res, next) {
         return;
     }
 
-    redisClient.getAsync(serviceName).then(function(res) {
-        let interval = 7;
-        let heartBeatCheck = 12;
+    redisClient.getAsync(serviceName).then(function(resultKey) {
+        let interval = 6;
+        let heartBeatCheck = 5;
         //key does not exist
-        if(res == null) {
+        if(resultKey == null) {
+            console.log("inserting service");
+            //isnert new service into database
             setExpiringKey(serviceName, interval);
+            //start sending heartbeat messages
             startHeartBeat(serviceName, heartBeatCheck);
+            sendHeartBeat(res, host, port, serviceName);
         }
         else {
+            //refresh expiring key
+            console.log("got a heartbeat, refreshing");
             setExpiringKey(serviceName, interval);
-            //TODO send back heartbeat
-
+            //send back heartbeat
+            sendHeartBeat(res, host, port, serviceName);
         }
-
-        res.send({
-            result: "a response"
-        });
     });
 });
+
+function sendHeartBeat(res, host, port, serviceName) {
+    //delay sending heartbeat response to avoid flooding network 
+    setTimeout(function() {
+        var postData = {
+            name: serviceName,
+            host: host,
+            port: port
+        };
+
+        const options = {
+            hostname: host,
+            port: port,
+            path: '/heartbeat',
+            method: 'POST',
+            headers: {
+                    'content-type': 'application/json',
+                    'accept': 'application/json'
+                }
+        };
+        const req = http.request(options, (res) => {
+            res.setEncoding('utf8');
+        });
+
+        req.on('error', (e) => {
+            console.error('problem with request: ', e.message);
+        });
+
+        // write data to request body
+        console.log("pinging service");
+        req.write(JSON.stringify(postData));
+        req.end();
+    }, 1000);
+}
 
 function setExpiringKey(key, time) {
     redisClient.setAsync(key, true, 'EX', time);

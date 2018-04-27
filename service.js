@@ -11,7 +11,6 @@ class Service extends Machine {
 
     heartbeat(disc_host, disc_port) {
         var postData = {
-            name: 'service',
             host: this.host,
             port: this.port
         };

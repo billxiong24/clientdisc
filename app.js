@@ -11,7 +11,7 @@ var users = require('./routes/users');
 const http = require('http');
 
 const host = '127.0.0.1';
-const port = 5124;
+const port = 5123;
 console.error = function() {};
 
 var app = express();

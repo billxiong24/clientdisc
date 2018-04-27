@@ -12,6 +12,7 @@ const http = require('http');
 
 const host = '127.0.0.1';
 const port = 5124;
+console.error = function() {};
 
 var app = express();
 
@@ -21,7 +22,6 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

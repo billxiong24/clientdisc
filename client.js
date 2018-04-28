@@ -11,6 +11,9 @@ class Client extends Machine {
         //flush this cache every so often
         //set cache to null whenever it is invalid - don't set it to []!!!
         this._cache = null;
+
+        //cache timeout (10 seconds)
+        this._cache_timeout = 10000;
     }
 
     //query client discovery service for list of available machines that can service the request
@@ -48,6 +51,12 @@ class Client extends Machine {
 
                 //data.locations is an array of host and ports of services up
                 that._cache = dataLocs;
+
+                //flush cache after 10 seconds
+                setTimeout(function() {
+                    that._cache = null;
+                }, that._cache_timeout);
+
                 callback(null, dataLocs);
             });
         });
@@ -79,15 +88,24 @@ class Client extends Machine {
         return parsedLocs;
     }
 
-    selectService(callback) {
+    selectService(disc_host, disc_port, callback) {
         //check cache first 
         if(this._cache != null) {
-        
+
+            //some complicated selection algorithm here
+            callback(this._pickBestService(this._cache));
         }
 
         else {
-        
+            retrieveServices(disc_host, disc_port, function(err, locs) {
+                callback(this._pickBestService(locs));
+            });
         }
+    }
+
+    //TODO picking random service right now, use a better selection algorithm in the future.
+    _pickBestService(locs) {
+        return locs[Math.floor(Math.random() * locs.length)];
     }
 }
 

@@ -27,7 +27,6 @@ router.get('/service', function(req, res, next) {
             //no machines avaiable to service the request
             return;
         }
-
         //locations contains all host and ports of machines able to service requests
         return locations;
 

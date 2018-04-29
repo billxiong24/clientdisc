@@ -1,0 +1,14 @@
+{
+  "name": "service",
+  "version": "1.0.0",
+  "description": "service module",
+  "main": "service.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "billxiong",
+  "license": "ISC",
+  "dependencies": {
+    "http": "0.0.0"
+  }
+}

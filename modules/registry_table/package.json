@@ -1,0 +1,15 @@
+{
+  "name": "registry_table",
+  "version": "1.0.0",
+  "description": "registry table",
+  "main": "registrytable.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "billxiong",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "redis": "^2.8.0"
+  }
+}

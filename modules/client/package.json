@@ -1,0 +1,14 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "client module",
+  "main": "client.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "billxiong",
+  "license": "ISC",
+  "dependencies": {
+    "http": "0.0.0"
+  }
+}

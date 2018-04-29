@@ -1,0 +1,15 @@
+{
+    "test" :{
+        "host": "192.0.0.4",
+        "port": 4545
+    },
+
+    "test1" : {
+        "host": "localhost",
+        "port": 9090
+    },
+    "test2" : {
+        "host": "localhost",
+        "port":5653 
+    }
+}

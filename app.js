@@ -14,7 +14,6 @@ const http = require('http');
 const host = process.env.DISC_HOST;
 const port = process.env.DISC_PORT;
 
-console.log(host);
 console.error = function() {};
 
 var app = express();
@@ -53,6 +52,7 @@ app.use(function(err, req, res, next) {
 
 
 app.listen(port, function() {
-    console.log("server listening");
+    console.log("Server listening on", host + ":" + port);
 });
+
 module.exports = app;

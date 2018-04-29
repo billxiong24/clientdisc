@@ -17,8 +17,6 @@ router.get('/', function(req, res, next) {
 //client sends request here to inquire about network addresses available to
 //service a specific request.
 router.get('/service', function(req, res, next) {
-    //console.log(req);
-    console.log(JSON.stringify(req.headers));
 
     redisClient.scanAsync(0, 'MATCH', '*').then(function(val) {
         let locations = val[1];

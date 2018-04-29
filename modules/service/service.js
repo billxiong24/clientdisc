@@ -1,5 +1,5 @@
 var http = require('http');
-var Machine = require('./machine.js');
+var Machine = require('../machine.js');
 
 class Service extends Machine {
     
@@ -7,7 +7,6 @@ class Service extends Machine {
         super(host, port);
         this._route = '/heartbeat';
     }
-
 
     //provide heartbeat function for services to put in their POST /heartbeat function
     heartbeat(disc_host, disc_port) {

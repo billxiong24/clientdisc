@@ -1,4 +1,4 @@
-var Machine = require('./machine.js');
+var Machine = require('../machine.js');
 var http = require('http');
 
 class Client extends Machine {

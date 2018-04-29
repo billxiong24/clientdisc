@@ -45,18 +45,23 @@ class Client extends Machine {
 
                 //join the data together into a big string,
                 //and parse into json
-                data = JSON.parse(data.join(''));
+                try {
+                    data = JSON.parse(data.join(''));
+                }
+
+                catch(err) {
+                    console.log("Error parsing JSON response");
+                    callback(err, null);
+                    request.end();
+                    return;
+                }
 
                 let dataLocs = that._parseLocs(data.locations);
 
                 //data.locations is an array of host and ports of services up
                 that._cache = dataLocs;
 
-                //flush cache after 10 seconds
-                setTimeout(function() {
-                    that._cache = null;
-                }, that._cache_timeout);
-
+                _setCacheTimeout();
                 callback(null, dataLocs);
             });
         });
@@ -68,6 +73,13 @@ class Client extends Machine {
         });
 
         request.end();
+    }
+
+    _setCacheTimeout() {
+        //flush cache after 10 seconds
+        setTimeout(function() {
+            that._cache = null;
+        }, that._cache_timeout);
     }
 
     //given json data, translate it into array of objects of form {host, port}

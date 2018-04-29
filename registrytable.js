@@ -36,8 +36,11 @@ class RegistryTable {
                 return null;
             }
 
-
             let arr = res.split(that._DELIM);
+
+            if(arr.length != 2) {
+                return null;
+            }
 
             return {
                 host: arr[0],

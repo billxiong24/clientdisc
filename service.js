@@ -9,6 +9,7 @@ class Service extends Machine {
     }
 
 
+    //provide heartbeat function for services to put in their POST /heartbeat function
     heartbeat(disc_host, disc_port) {
         var postData = {
             host: this.host,

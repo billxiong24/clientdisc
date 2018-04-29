@@ -56,13 +56,17 @@ router.post('/heartbeat', function(req, res, next) {
     let key = getDBKey(host, port);
 
     redisClient.getAsync(key).then(function(resultKey) {
-        let interval = 6;
-        let heartBeatCheck = 5;
+
+        //load from configuration file
+        let expire = process.env.HEARTBEAT_EXPIRE;
+
+        let heartBeatCheck = expire - 1;
+
         //key does not exist
         if(resultKey == null) {
             console.log("Service not found, inserting", host, port, "into database.");
             //isnert new service into database
-            setExpiringKey(host, port, interval);
+            setExpiringKey(host, port, expire);
             //start sending heartbeat messages
             startHeartBeat(key, heartBeatCheck);
             //send first heartbeat
@@ -71,7 +75,7 @@ router.post('/heartbeat', function(req, res, next) {
         else {
             //refresh expiring key
             console.log("Received heartbeat from existing service", host, port);
-            setExpiringKey(host, port, interval);
+            setExpiringKey(host, port, expire);
 
             //send back heartbeat
             sendHeartBeat(res, host, port);
@@ -80,6 +84,10 @@ router.post('/heartbeat', function(req, res, next) {
 });
 
 function sendHeartBeat(res, host, port) {
+
+    //load interval from config file and convert to milliseconds
+    let interval = parseInt(process.env.HEARTBEAT_INTERVAL) * 1000;
+
     //delay sending heartbeat response to avoid flooding network 
     setTimeout(function() {
         var postData = {
@@ -111,7 +119,7 @@ function sendHeartBeat(res, host, port) {
         });
 
         req.end();
-    }, 1000);
+    }, interval);
 }
 
 function getDBKey(host, port) {

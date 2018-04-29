@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -10,8 +11,10 @@ var users = require('./routes/users');
 
 const http = require('http');
 
-const host = '127.0.0.1';
-const port = 5123;
+const host = process.env.DISC_HOST;
+const port = process.env.DISC_PORT;
+
+console.log(host);
 console.error = function() {};
 
 var app = express();

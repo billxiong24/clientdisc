@@ -31,6 +31,8 @@ router.get('/service', function(req, res, next) {
     })
     .then(function(locations) {
         //send back the service locations to the client
+        console.log("Sending server locations:", locations);
+
         res.send({
             locations: locations
         });
@@ -78,6 +80,29 @@ router.post('/heartbeat', function(req, res, next) {
             //send back heartbeat
             sendHeartBeat(res, host, port);
         }
+    });
+});
+
+router.delete('/service', function(req, res, next) {
+    let host = req.body.host;
+    let port = req.body.port;
+
+    let obj = {
+
+        host: host,
+        port: port
+    };
+
+    if(!host || !port) {
+        res.send(obj);
+        return;
+    }
+
+    let key = getDBKey(host, port);
+
+    redisClient.delAsync(key).then(function(result) {
+        console.log("Deleted", key, "from registry");
+        res.send(obj);
     });
 });
 

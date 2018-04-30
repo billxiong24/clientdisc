@@ -38,35 +38,8 @@ const request = http.request(options, (res) => {
             return;
         }
 
-        let rl = require('readline');
-        let readline = rl.createInterface(process.stdin, process.stdout);
-        readline.setPrompt('registry_server ' + host + ":" + port + ">>> ");
-        readline.prompt();
-
         var parser = require('./parser.js');
 
-        readline.on('line', function(line) {
-            var promise = parser.parse(line);
-            if(promise == null) {
-                return;
-            }
-            promise.then(function(data) {
-                if(data) {
-                    parser.printAddresses(data);
-                }
-                else {
-                    console.log("No machines registered.");
-
-                }
-                readline.prompt();
-            });
-        });
-
-        readline.on('close', function() {
-            console.log("\n");
-            process.exit(0);
-        
-        });
     });
 });
 

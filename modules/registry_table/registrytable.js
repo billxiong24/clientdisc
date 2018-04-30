@@ -49,6 +49,19 @@ class RegistryTable {
         });
     }
 
+    startSimpleServer(port) {
+        if(isNaN(parseInt(port)) {
+            console.log("Malformed port:", port);
+            return;
+        }
+        var sys = require('util');
+        var exec = require('child-process').exec;
+        exec('redis-server --port' + port, function(err, stdout, stdin) {
+            sys.puts(stdout);
+        
+        });
+    }
+
     //given a file path, load its content into the registry table
     loadConfigFile(file) {
         //load configuration file

@@ -11,7 +11,6 @@ readline.prompt();
 var Client = require('../modules/client/client.js');
 var Service = require('../modules/service/service.js');
 
-
 function parse(command) {
     var client = new Client();
 

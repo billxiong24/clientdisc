@@ -4,6 +4,9 @@ var http = require('http');
 var host = process.env.DISC_HOST;
 var port = process.env.DISC_PORT;
 
+console.error = function() {};
+
+//make request to server just to see if it is up. If not, we exit
 const options = {
     host: process.env.DISC_HOST,
     port: process.env.DISC_PORT,
@@ -38,14 +41,13 @@ const request = http.request(options, (res) => {
             return;
         }
 
+        //start the command prompt
         var parser = require('./parser.js');
-
     });
 });
 
 request.on('error', (e) => {
     console.error('problem with request: ', e.message);
-    //callback(e, null);
 });
 
 request.end();

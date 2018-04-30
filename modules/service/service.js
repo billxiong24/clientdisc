@@ -9,15 +9,19 @@ class Service extends Machine {
     }
 
     registerService(disc_host, disc_port) {
-        this._makeRequest('POST', disc_host, disc_port);
+        this._makeRequest('POST', disc_host, disc_port, this._route);
+    }
+
+    removeService(disc_host, disc_port) {
+        this._makeRequest('DELETE', disc_host, disc_port, '/service');
     }
 
     //provide heartbeat function for services to put in their POST /heartbeat function
     heartbeat(disc_host, disc_port) {
-        this._makeRequest('PUT', disc_host, disc_port);
+        this._makeRequest('PUT', disc_host, disc_port, this._route);
     }
 
-    _makeRequest(reqType, disc_host, disc_port) {
+    _makeRequest(reqType, disc_host, disc_port, path) {
         var postData = {
             host: this.host,
             port: this.port
@@ -26,11 +30,12 @@ class Service extends Machine {
         const options = {
             hostname: disc_host,
             port: disc_port,
-            path: this._route,
+            path: path,
             method: reqType,
             headers: {
                     'content-type': 'application/json',
-                    'accept': 'application/json'
+                    'accept': 'application/json',
+                    'Content-Length': Buffer.byteLength(JSON.stringify(postData))
                 }
         };
         const request = http.request(options, (res) => {

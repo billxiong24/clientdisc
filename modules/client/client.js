@@ -17,7 +17,7 @@ class Client extends Machine {
     }
 
     //query client discovery service for list of available machines that can service the request
-    retrieveServices(disc_host, disc_port) {
+    retrieveServicesLocations(disc_host, disc_port) {
         var that = this;
 
         return new Promise(function(resolve, reject) {
@@ -127,10 +127,5 @@ class Client extends Machine {
         return locs[Math.floor(Math.random() * locs.length)];
     }
 }
-
-var c = new Client();
-c.retrieveServices('localhost', 5124).then(function(locs) {
-    //console.log(locs);
-});
 
 module.exports = Client;

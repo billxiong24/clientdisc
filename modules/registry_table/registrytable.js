@@ -91,7 +91,4 @@ class RegistryTable {
 
 }
 
-var reg = new RegistryTable('localhost', 4343);
-reg.loadConfigFile('./config.json');
-
 module.exports = RegistryTable;

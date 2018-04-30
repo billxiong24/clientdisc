@@ -14,6 +14,14 @@ router.get('/', function(req, res, next) {
     res.render('index', { title: 'Express' });
 });
 
+router.get('/ping', function(req, res, next) {
+
+    res.send({
+        host: process.env.DISC_HOST,
+        port: process.env.DISC_PORT
+    });
+});
+
 //client sends request here to inquire about network addresses available to
 //service a specific request.
 router.get('/service', function(req, res, next) {
@@ -23,7 +31,7 @@ router.get('/service', function(req, res, next) {
 
         if(!locations || locations.length == 0) {
             //no machines avaiable to service the request
-            return;
+            return null;
         }
         //locations contains all host and ports of machines able to service requests
         return locations;

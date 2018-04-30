@@ -59,7 +59,10 @@ class Client extends Machine {
                         return;
                     }
 
-                    let dataLocs = that._parseLocs(data.locations);
+                    let dataLocs = null;
+                    if(data.locations) {
+                        dataLocs = that._parseLocs(data.locations);
+                    }
 
                     //data.locations is an array of host and ports of services up
                     that._cache = dataLocs;

@@ -83,6 +83,47 @@ router.post('/heartbeat', function(req, res, next) {
     });
 });
 
+router.put('/heartbeat', function(req, res, next) {
+    let host = req.body.host;
+    let port = req.body.port;
+
+    if(!host || !port) {
+        res.send({
+            err: "Malformed parameters."
+        });
+        return;
+    }
+
+    let key = getDBKey(host, port);
+
+    redisClient.getAsync(key).then(function(resultKey) {
+
+        //load from configuration file
+        let expire = process.env.HEARTBEAT_EXPIRE;
+
+        let heartBeatCheck = expire - 1;
+
+        //key does not exist
+        if(resultKey == null) {
+            console.log("Service not found, inserting", host, port, "into database.");
+            //isnert new service into database
+            setExpiringKey(host, port, expire);
+            //start sending heartbeat messages
+            startHeartBeat(key, heartBeatCheck);
+            //send first heartbeat
+            sendHeartBeat(res, host, port);
+        }
+        else {
+            //refresh expiring key
+            console.log("Received heartbeat from existing service", host, port);
+            setExpiringKey(host, port, expire);
+
+            //send back heartbeat
+            sendHeartBeat(res, host, port);
+        }
+    });
+});
+
 router.delete('/service', function(req, res, next) {
     let host = req.body.host;
     let port = req.body.port;

@@ -3,8 +3,8 @@ var http = require('http');
 
 class Client extends Machine {
 
-    constructor(host, port) {
-        super(host, port);
+    constructor() {
+        super(null, null);
         this._service_route = '/service';
 
         //cache service locations in array so we dont have to query registry often
@@ -17,66 +17,73 @@ class Client extends Machine {
     }
 
     //query client discovery service for list of available machines that can service the request
-    retrieveServices(disc_host, disc_port, callback) {
-
+    retrieveServices(disc_host, disc_port) {
         var that = this;
 
-        const options = {
-            hostname: disc_host,
-            port: disc_port,
-            path: this._service_route,
-            method: 'GET',
-            headers: {
-                    'content-type': 'application/json',
-                    'accept': 'application/json'
-                }
-        };
+        return new Promise(function(resolve, reject) {
+
+            const options = {
+                hostname: disc_host,
+                port: disc_port,
+                path: that._service_route,
+                method: 'GET',
+                headers: {
+                        'content-type': 'application/json',
+                        'accept': 'application/json'
+                    }
+            };
 
 
-        var data = [];
-        const request = http.request(options, (res) => {
-            res.setEncoding('utf8');
+            var data = [];
 
-            //res.on(data) streams the data, so gotta concat everything together.
-            //res.on(end) is when all data has been sent, so we can join everything together.
-            res.on('data', function(bit) {
-                data.push(bit);
-            }).on('end', function() {
+            const request = http.request(options, (res) => {
+                res.setEncoding('utf8');
 
-                //join the data together into a big string,
-                //and parse into json
-                try {
-                    data = JSON.parse(data.join(''));
-                }
+                //res.on(data) streams the data, so gotta concat everything together.
+                //res.on(end) is when all data has been sent, so we can join everything together.
+                res.on('data', function(bit) {
+                    data.push(bit);
+                }).on('end', function() {
 
-                catch(err) {
-                    console.log("Error parsing JSON response");
-                    callback(err, null);
-                    request.end();
-                    return;
-                }
+                    //join the data together into a big string,
+                    //and parse into json
+                    try {
+                        data = JSON.parse(data.join(''));
+                    }
 
-                let dataLocs = that._parseLocs(data.locations);
+                    catch(err) {
+                        console.log("Error parsing JSON response");
+                        //callback(err, null);
+                        reject(err);
+                        request.end();
+                        return;
+                    }
 
-                //data.locations is an array of host and ports of services up
-                that._cache = dataLocs;
+                    let dataLocs = that._parseLocs(data.locations);
 
-                _setCacheTimeout();
-                callback(null, dataLocs);
+                    //data.locations is an array of host and ports of services up
+                    that._cache = dataLocs;
+
+                    that._setCacheTimeout();
+                    resolve(dataLocs);
+                    //callback(null, dataLocs);
+                });
             });
+
+            request.on('error', (e) => {
+
+                console.error('problem with request: ', e.message);
+                //callback(e, null);
+                reject(e);
+            });
+
+            request.end();
         });
-
-        request.on('error', (e) => {
-
-            console.error('problem with request: ', e.message);
-            callback(e, null);
-        });
-
-        request.end();
     }
 
     _setCacheTimeout() {
         //flush cache after 10 seconds
+        var that = this;
         setTimeout(function() {
             that._cache = null;
         }, that._cache_timeout);
@@ -120,5 +127,10 @@ class Client extends Machine {
         return locs[Math.floor(Math.random() * locs.length)];
     }
 }
+
+var c = new Client();
+c.retrieveServices('localhost', 5124).then(function(locs) {
+    //console.log(locs);
+});
 
 module.exports = Client;

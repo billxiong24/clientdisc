@@ -8,8 +8,16 @@ class Service extends Machine {
         this._route = '/heartbeat';
     }
 
+    registerService(disc_host, disc_port) {
+        this._makeRequest('POST', disc_host, disc_port);
+    }
+
     //provide heartbeat function for services to put in their POST /heartbeat function
     heartbeat(disc_host, disc_port) {
+        this._makeRequest('PUT', disc_host, disc_port);
+    }
+
+    _makeRequest(reqType, disc_host, disc_port) {
         var postData = {
             host: this.host,
             port: this.port
@@ -19,7 +27,7 @@ class Service extends Machine {
             hostname: disc_host,
             port: disc_port,
             path: this._route,
-            method: 'POST',
+            method: reqType,
             headers: {
                     'content-type': 'application/json',
                     'accept': 'application/json'
